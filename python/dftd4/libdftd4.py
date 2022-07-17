@@ -43,11 +43,7 @@ def get_api_version() -> str:
     For Python we want something that looks like a semantic version again.
     """
     api_version = lib.dftd4_get_version()
-    return "{}.{}.{}".format(
-        api_version // 10000,
-        api_version % 10000 // 100,
-        api_version % 100,
-    )
+    return f"{api_version // 10000}.{api_version % 10000 // 100}.{api_version % 100}"
 
 
 def _delete_error(error) -> None:
@@ -152,6 +148,6 @@ def _ref(ctype, value):
     """Create a reference to a value"""
     if value is None:
         return ffi.NULL
-    ref = ffi.new(ctype + "*")
+    ref = ffi.new(f"{ctype}*")
     ref[0] = value
     return ref

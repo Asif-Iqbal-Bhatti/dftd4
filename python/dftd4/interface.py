@@ -64,20 +64,20 @@ class Structure:
 
         _charge = _ref("double", charge)
 
-        if lattice is not None:
-            if lattice.size != 9:
-                raise ValueError("Invalid lattice provided")
-            _lattice = np.array(lattice, dtype="float")
-        else:
+        if lattice is None:
             _lattice = None
 
-        if periodic is not None:
-            if periodic.size != 3:
-                raise ValueError("Invalid periodicity provided")
-            _periodic = np.array(periodic, dtype="bool")
+        elif lattice.size != 9:
+            raise ValueError("Invalid lattice provided")
         else:
+            _lattice = np.array(lattice, dtype="float")
+        if periodic is None:
             _periodic = None
 
+        elif periodic.size != 3:
+            raise ValueError("Invalid periodicity provided")
+        else:
+            _periodic = np.array(periodic, dtype="bool")
         self._mol = new_structure(
             self._natoms,
             _cast("int*", _numbers),
@@ -109,13 +109,13 @@ class Structure:
             raise ValueError("Dimension missmatch for positions")
         _positions = np.array(positions, dtype="float")
 
-        if lattice is not None:
-            if lattice.size != 9:
-                raise ValueError("Invalid lattice provided")
-            _lattice = np.array(lattice, dtype="float")
-        else:
+        if lattice is None:
             _lattice = None
 
+        elif lattice.size != 9:
+            raise ValueError("Invalid lattice provided")
+        else:
+            _lattice = np.array(lattice, dtype="float")
         _error = new_error()
         _lib.dftd4_update_structure(
             _error,
@@ -152,7 +152,7 @@ class DampingParam:
                     kwargs.get("alp", 16.0),
                 )
             except KeyError as e:
-                raise RuntimeError("Constructor requires argument for " + str(e))
+                raise RuntimeError(f"Constructor requires argument for {str(e)}")
 
 
 class Results:
@@ -283,6 +283,6 @@ def _ref(ctype, value):
     """Create a reference to a value"""
     if value is None:
         return _ffi.NULL
-    ref = _ffi.new(ctype + "*")
+    ref = _ffi.new(f"{ctype}*")
     ref[0] = value
     return ref
