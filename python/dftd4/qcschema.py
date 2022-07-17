@@ -101,10 +101,12 @@ def run_qcschema(
 ) -> qcel.models.AtomicResult:
     """Perform disperson correction based on an atomic inputmodel"""
 
-    if not isinstance(input_data, qcel.models.AtomicInput):
-        atomic_input = qcel.models.AtomicInput(**input_data)
-    else:
-        atomic_input = input_data
+    atomic_input = (
+        input_data
+        if isinstance(input_data, qcel.models.AtomicInput)
+        else qcel.models.AtomicInput(**input_data)
+    )
+
     ret_data = atomic_input.dict()
 
     provenance = {
@@ -127,11 +129,10 @@ def run_qcschema(
             return_result=return_result,
             error=qcel.models.ComputeError(
                 error_type="input error",
-                error_message="Level '{}' is invalid for this dispersion correction".format(
-                    _level
-                ),
+                error_message=f"Level '{_level}' is invalid for this dispersion correction",
             ),
         )
+
         return qcel.models.AtomicResult(**ret_data)
 
     # Check if the method is provided and strip the “dashlevel” from the method

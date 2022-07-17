@@ -133,18 +133,17 @@ class DFTD4(Calculator):
         # Invalidate cached calculator and results object
         if _reset:
             self._disp = None
-        else:
-            if system_changes and self._disp is not None:
-                try:
-                    _cell = self.atoms.cell
-                    self._disp.update(
-                        self.atoms.positions / Bohr,
-                        _cell / Bohr,
-                    )
-                # An exception in this part means the geometry is bad,
-                # still we will give a complete reset a try as well
-                except RuntimeError:
-                    self._disp = None
+        elif system_changes and self._disp is not None:
+            try:
+                _cell = self.atoms.cell
+                self._disp.update(
+                    self.atoms.positions / Bohr,
+                    _cell / Bohr,
+                )
+            # An exception in this part means the geometry is bad,
+            # still we will give a complete reset a try as well
+            except RuntimeError:
+                self._disp = None
 
     def _create_api_calculator(self) -> DispersionModel:
         """Create a new API calculator object"""
